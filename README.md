@@ -32,6 +32,18 @@ config.json         site title, publisher, default base URL for local builds
 .github/workflows/  pages.yml: build and deploy on every push; zenodo.yml: Zenodo deposit, run by hand
 ```
 
+## Themes, search and filters
+
+The catalogue has one tab and one page per theme (`themes/<slug>/`). Themes are the course
+categories of EDCH Training, listed in `config.json` (`themes`). Each resource takes its theme
+from the `moodleCategory` field of its sidecar (a name, or a list of names, exactly as in
+`config.json`); the build warns about names it does not know. When resources are imported from
+Moodle, this field will be filled from the course category.
+
+Search (title, description, keywords, theme) and filters (format, language, audience, licence,
+time required) run in the browser. A filter with a single value is hidden. The search and
+filters are kept in the page address, so a filtered view can be shared as a link.
+
 ## Add a resource
 
 1. Export the content as an `.h5p` file (Moodle content bank, H5P editor, Lumi).

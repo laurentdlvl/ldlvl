@@ -8,5 +8,39 @@
     "url": "https://training.edch.eu"
   },
   "baseUrl": "https://laurentdlvl.github.io/ldlvl/",
-  "repositoryUrl": "https://github.com/laurentdlvl/ldlvl"
+  "repositoryUrl": "https://github.com/laurentdlvl/ldlvl",
+  "themes": [
+    {
+      "slug": "funding",
+      "name": "Funding"
+    },
+    {
+      "slug": "legal-ownership-governance",
+      "name": "Legal Ownership and Governance"
+    },
+    {
+      "slug": "open-science",
+      "name": "Open Science"
+    },
+    {
+      "slug": "editorial-research-quality",
+      "name": "Editorial Quality, Research Quality"
+    },
+    {
+      "slug": "technical-service-efficiency",
+      "name": "Technical Service Efficiency"
+    },
+    {
+      "slug": "visibility-communication-impact",
+      "name": "Visibility, Communication and Impact"
+    },
+    {
+      "slug": "edib",
+      "name": "Equity, Diversity, Inclusion, Belonging"
+    },
+    {
+      "slug": "for-trainers",
+      "name": "For Trainers"
+    }
+  ]
 }

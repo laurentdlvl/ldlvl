@@ -122,7 +122,7 @@ def amb_record(slug, h5p, side, lic, cfg, base):
         "conditionsOfAccess": {"id": "http://w3id.org/kim/conditionsOfAccess/no_login", "type": "Concept"},
         "learningResourceType": [{"id": "https://w3id.org/kim/hcrt/course", "type": "Concept", "prefLabel": {"en": "Course"}}],
         "interactivityType": {"id": f"http://purl.org/dcx/lrmi-vocabs/interactivityType/{side.get('interactivityType', 'mixed')}", "type": "Concept"},
-        "keywords": side.get("keywords", []),
+        "keywords": side.get("keywords", []) + [n for n in side.get("_themes", []) if n not in side.get("keywords", [])],
         "creator": [{"type": c.get("type", "Organization"), "name": c["name"], **({"id": c["id"]} if c.get("id") else {})}
                     for c in (side.get("creators") or [{"name": a["name"]} for a in h5p.get("authors", []) if a.get("name")])],
         "publisher": [{"type": "Organization", "name": cfg["publisher"]["name"], "id": cfg["publisher"]["url"]}],
@@ -192,6 +192,8 @@ def page_resource(slug, h5p, side, lic, rows, rec, cfg, exposed):
     kind = H5P_TYPES.get(h5p.get("mainLibrary"), "Interactive content")
     labels = {"ok": "Met", "check": "To check", "missing": "Missing"}
     met = sum(r[1] == "ok" for r in rows)
+    theme_links = ", ".join(f'<a href="{root}themes/{th["slug"]}/">{e(th["name"])}</a>' for th in side.get("_themeRefs", []))
+    theme_html = f"<div><dt>Theme</dt><dd>{theme_links}</dd></div>" if theme_links else ""
     lic_block = (f'<a href="{e(lic[2])}" rel="license">{e(lic[3])}</a>' if lic else
                  '<strong class="warn">No licence declared.</strong> Reuse is not permitted until the author declares one.')
     out += f"""<header class="site"><a class="home" href="{root}">{e(cfg['siteTitle'])}</a></header>
@@ -208,6 +210,7 @@ def page_resource(slug, h5p, side, lic, rows, rec, cfg, exposed):
     <a class="btn" href="metadata.json">Metadata (JSON-LD)</a></p>
     <dl class="facts">
       <div><dt>Licence</dt><dd>{lic_block}</dd></div>
+      {theme_html}
       <div><dt>Author</dt><dd>{e(creators)}</dd></div>
       <div><dt>Publisher</dt><dd><a href="{e(cfg['publisher']['url'])}">{e(cfg['publisher']['name'])}</a></dd></div>
       <div><dt>Version</dt><dd>{e(side.get('version') or 'not set')}</dd></div>
@@ -249,32 +252,94 @@ def page_resource(slug, h5p, side, lic, rows, rec, cfg, exposed):
     return out
 
 
-def page_index(items, cfg):
-    root = "./"
-    out = head(cfg["siteTitle"], cfg["siteDescription"]).replace("{root}", root)
-    cards = []
-    for it in items:
+FACETS = [("format", "Format"), ("language", "Language"), ("audience", "Audience"), ("licence", "Licence"), ("duration", "Time required")]
+
+
+def themes_of(side, cfg):
+    """Map the sidecar's Moodle category name(s) to theme slugs from config.json."""
+    raw = side.get("moodleCategory") or []
+    names = [raw] if isinstance(raw, str) else raw
+    by_name = {t["name"].casefold(): t["slug"] for t in cfg.get("themes", [])}
+    found, unknown = [], []
+    for n in names:
+        (found if n.casefold() in by_name else unknown).append(by_name.get(n.casefold(), n))
+    return found, unknown
+
+
+def page_index(items, cfg, root="./", theme=None):
+    themes = cfg.get("themes", [])
+    tname = {t["slug"]: t["name"] for t in themes}
+    shown = [it for it in items if theme is None or theme in it["themes"]]
+    title = cfg["siteTitle"] if theme is None else f"{tname[theme]} | {cfg['siteTitle']}"
+    desc = cfg["siteDescription"] if theme is None else f"Open H5P learning resources on {tname[theme]}."
+    out = head(title, desc).replace("{root}", root)
+
+    tabs = [f'<li><a class="tab" href="{root}" data-tab="" {"aria-current=page" if theme is None else ""}>All <span class="n">{len(items)}</span></a></li>']
+    for t in themes:
+        n = sum(t["slug"] in it["themes"] for it in items)
+        cur = "aria-current=page" if theme == t["slug"] else ""
+        tabs.append(f'<li><a class="tab{" empty" if n == 0 else ""}" href="{root}themes/{t["slug"]}/" data-tab="{t["slug"]}" {cur}>{e(t["name"])} <span class="n">{n}</span></a></li>')
+
+    facet_html = []
+    for key, label in FACETS:
+        values = {}
+        for it in shown:
+            for v in it["facets"].get(key, []):
+                values[v] = values.get(v, 0) + 1
+        if len(values) < 2:
+            continue
+        opts = "".join(
+            f'<li><label><input type="checkbox" name="{key}" value="{e(v)}"> <span class="lbl">{e(v)}</span> <span class="n" data-count>{c}</span></label></li>'
+            for v, c in sorted(values.items(), key=lambda kv: (-kv[1], kv[0])))
+        facet_html.append(f'<fieldset class="facet" data-facet="{key}"><legend>{e(label)}</legend><ul>{opts}</ul></fieldset>')
+
+    cards, data = [], []
+    for it in shown:
         lic = it["lic"]
         met = sum(r[1] == "ok" for r in it["rows"])
-        cards.append(f"""<li class="card">
-      <h2><a href="r/{it['slug']}/">{e(it['title'])}</a></h2>
+        chips = "".join(f'<a class="chip" href="{root}themes/{s}/">{e(tname[s])}</a>' for s in it["themes"])
+        cards.append(f"""<li class="card" data-slug="{it['slug']}">
+      {f'<p class="chips">{chips}</p>' if chips else ''}
+      <h2><a href="{root}r/{it['slug']}/">{e(it['title'])}</a></h2>
       <p>{e(it['desc'])}</p>
       <dl class="meta">
         <div><dt>Format</dt><dd>{e(it['kind'])}, in {e(lang_names(it['lang']))}</dd></div>
         <div><dt>Licence</dt><dd>{e(lic[3]) if lic else '<span class="warn">Not declared</span>'}</dd></div>
         <div><dt>Minimum requirements</dt><dd>{met} of {len(it['rows'])} met{'' if it['exposed'] else ', not exposed to catalogues'}</dd></div>
       </dl>
-      <p class="actions"><a class="btn primary" href="r/{it['slug']}/">Open</a> {f'<a class="btn" href="downloads/{it["slug"]}.h5p" download>Download</a>' if lic else ''}</p>
+      <p class="actions"><a class="btn primary" href="{root}r/{it['slug']}/">Open</a> {f'<a class="btn" href="{root}downloads/{it["slug"]}.h5p" download>Download</a>' if lic else ''}</p>
     </li>""")
-    out += f"""<header class="site"><span class="home">{e(cfg['siteTitle'])}</span></header>
+        data.append({"slug": it["slug"], "text": it["search"], "facets": it["facets"]})
+
+    heading = cfg["siteTitle"] if theme is None else tname[theme]
+    lede = (f"{e(cfg['siteDescription'])} Each resource can be played here, downloaded as an .h5p package, and imported into Moodle or any platform that supports H5P."
+            if theme is None else f"Resources from the EDCH Training courses in the {e(tname[theme])} category.")
+    empty_theme = '<p class="empty-state">No resource in this theme yet.</p>' if not shown else ""
+    out += f"""<header class="site"><a class="home" href="{root}">{e(cfg['siteTitle'])}</a></header>
 <main class="catalogue">
-  <h1>{e(cfg['siteTitle'])}</h1>
-  <p class="lede">{e(cfg['siteDescription'])} Each resource can be played here, downloaded as an .h5p package, and imported into Moodle or any platform that supports H5P.</p>
-  <ul class="cards">
-    {''.join(cards)}
-  </ul>
-  <p class="note">For catalogues and harvesters: <a href="catalog.json">metadata records (AMB, JSON-LD)</a> and the <a href="sitemap.xml">sitemap</a>.{f' Source files are in the <a href="{e(cfg["repositoryUrl"])}">repository</a>.' if cfg.get('repositoryUrl') else ''}</p>
+  <h1>{e(heading)}</h1>
+  <p class="lede">{lede}</p>
+  <nav class="tabs" aria-label="Themes"><ul>{''.join(tabs)}</ul></nav>
+  {empty_theme}
+  <div class="browse"{' hidden' if not shown else ''}>
+    <aside class="filters" aria-label="Filters">
+      <label class="search-label" for="q">Search</label>
+      <input id="q" type="search" placeholder="Title, topic, keyword" autocomplete="off">
+      {f'<details class="facets" id="facets" open><summary>Filters</summary>' + ''.join(facet_html) + '</details>' if facet_html else ''}
+      <button type="button" class="link-btn" id="clear" hidden>Clear filters</button>
+    </aside>
+    <section aria-label="Results">
+      <p class="count" id="count" aria-live="polite">{len(shown)} resource{'s' if len(shown) != 1 else ''}</p>
+      <ul class="cards">
+        {''.join(cards)}
+      </ul>
+      <p class="empty-state" id="none" hidden>No resource matches these filters. <button type="button" class="link-btn" id="clear2">Clear filters</button></p>
+    </section>
+  </div>
+  <p class="note">Themes follow the course categories of <a href="{e(cfg['publisher']['url'])}">{e(cfg['publisher']['name'])}</a>. For catalogues and harvesters: <a href="{root}catalog.json">metadata records (AMB, JSON-LD)</a> and the <a href="{root}sitemap.xml">sitemap</a>.{f' Source files are in the <a href="{e(cfg["repositoryUrl"])}">repository</a>.' if cfg.get('repositoryUrl') else ''}</p>
 </main>
+<script type="application/json" id="catalogue-data">{json.dumps(data, ensure_ascii=False).replace("</", "<\\/")}</script>
+<script src="{root}assets/catalogue.js"></script>
 </body>
 </html>
 """
@@ -296,6 +361,8 @@ def main():
     shutil.copy(ROOT / "templates" / "site.css", out / "assets" / "site.css")
     (out / ".nojekyll").write_text("")
 
+    shutil.copy(ROOT / "templates" / "catalogue.js", out / "assets" / "catalogue.js")
+    cfg_theme_names = {th["slug"]: th["name"] for th in cfg.get("themes", [])}
     items, records, problems = [], [], 0
     for pkg in sorted((ROOT / "sources").glob("*.h5p")):
         slug = pkg.stem
@@ -309,6 +376,10 @@ def main():
         lic = licence_info(h5p, side)
         rows = socle(h5p, side, lic)
         exposed = lic is not None
+        tslugs, unknown = themes_of(side, cfg)
+        for u in unknown:
+            print(f"  WARNING {slug}: Moodle category {u!r} matches no theme in config.json")
+        side = {**side, "_themes": [cfg_theme_names[s] for s in tslugs], "_themeRefs": [{"slug": s, "name": cfg_theme_names[s]} for s in tslugs]}
         rec = amb_record(slug, h5p, side, lic, cfg, base)
         rdir = out / "r" / slug
         rdir.mkdir(parents=True)
@@ -317,9 +388,15 @@ def main():
         if exposed:
             records.append(rec)
         title = side.get("title") or h5p.get("title")
+        kind = H5P_TYPES.get(h5p.get("mainLibrary"), "Interactive content")
+        facets = {"format": [kind], "language": [LANGS.get(c, c) for c in rec.get("inLanguage", [])],
+                  "audience": side.get("audience", []), "licence": [f"{lic[0]} {lic[1]}" if lic else "Not declared"],
+                  "duration": [side["timeRequired"]] if side.get("timeRequired") else []}
+        search = " ".join([title, clean(side.get("description", "")), " ".join(side.get("keywords", [])),
+                           " ".join(cfg_theme_names.get(s, "") for s in tslugs)])
         items.append({"slug": slug, "title": title, "desc": clean(side.get("description", "")), "lic": lic, "rows": rows,
-                      "exposed": exposed, "kind": H5P_TYPES.get(h5p.get("mainLibrary"), "Interactive content"),
-                      "lang": rec.get("inLanguage", [])})
+                      "exposed": exposed, "kind": kind, "lang": rec.get("inLanguage", []), "themes": tslugs,
+                      "facets": facets, "search": search})
         print(f"\n{slug}  ({'exposed' if exposed else 'NOT exposed'})")
         for r in rows:
             mark = {"ok": "  ok ", "check": "check", "missing": " MISS"}[r[1]]
@@ -327,9 +404,16 @@ def main():
             problems += r[1] == "missing"
 
     (out / "index.html").write_text(page_index(items, cfg), encoding="utf-8")
+    theme_urls = []
+    for th in cfg.get("themes", []):
+        tdir = out / "themes" / th["slug"]
+        tdir.mkdir(parents=True)
+        (tdir / "index.html").write_text(page_index(items, cfg, root="../../", theme=th["slug"]), encoding="utf-8")
+        if any(th["slug"] in it["themes"] and it["exposed"] for it in items):
+            theme_urls.append(f"{base}themes/{th['slug']}/")
     (out / "catalog.json").write_text(json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8")
     today = dt.date.today().isoformat()
-    urls = [base] + [r["id"] for r in records]
+    urls = [base] + theme_urls + [r["id"] for r in records]
     (out / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         + "".join(f"  <url><loc>{e(u)}</loc><lastmod>{today}</lastmod></url>\n" for u in urls) + "</urlset>\n", encoding="utf-8")

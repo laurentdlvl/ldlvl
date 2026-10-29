@@ -1,6 +1,7 @@
 {
   "_note": "Complements h5p.json. WARNING: the package itself declares no licence (license: U) and no author. Fix it in the authoring tool, or set licence below once confirmed; until then the resource is shown but not exposed for harvesting.",
   "title": "Copyright and licences",
+  "moodleCategory": "Open Science",
   "description": "[draft] Essential guidance for implementing copyright and licensing practices aligned with Diamond Open Access publishing: rights management, choosing an appropriate licence, and writing transparent policies. Includes quizzes to check understanding.",
   "inLanguage": [
     "en"
