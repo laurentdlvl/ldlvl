@@ -37,5 +37,15 @@
   "doi": "",
   "isPartOf": "",
   "accessibility": "",
-  "thirdPartyContentCredited": null
+  "thirdPartyContentCredited": null,
+  "zenodo": {
+    "sandbox": {
+      "recordId": 627716,
+      "conceptRecid": "627715",
+      "doi": "10.5072/zenodo.627716",
+      "conceptDoi": "10.5072/zenodo.627715",
+      "version": "1.0.0",
+      "date": "2026-10-29"
+    }
+  }
 }
