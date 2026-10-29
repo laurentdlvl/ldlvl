@@ -1,0 +1,40 @@
+{
+  "_note": "Complements h5p.json, which carries no description. Fields left empty are reported as missing by the build. Text marked [draft] was drafted from the course content and must be validated by the author.",
+  "title": "Choosing a publishing platform",
+  "description": "[draft] How to evaluate and choose a journal publishing platform that complies with the Diamond Open Access Standard (DOAS): essential back-end and front-end features, technical requirements, and a checklist to assess a current set-up or a new platform.",
+  "inLanguage": [
+    "en"
+  ],
+  "audience": [
+    "Diamond Open Access publishers",
+    "Service providers",
+    "Journal editors",
+    "Publishing infrastructure and training staff"
+  ],
+  "audienceRole": [
+    "professional"
+  ],
+  "interactivityType": "mixed",
+  "learningObjectives": [],
+  "prerequisites": "",
+  "timeRequired": "",
+  "keywords": [
+    "Diamond Open Access",
+    "DOAS",
+    "publishing platform",
+    "scholarly publishing"
+  ],
+  "creators": [
+    {
+      "type": "Organization",
+      "name": "DIAMAS",
+      "id": ""
+    }
+  ],
+  "version": "1.0.0",
+  "datePublished": "",
+  "doi": "",
+  "isPartOf": "",
+  "accessibility": "",
+  "thirdPartyContentCredited": null
+}

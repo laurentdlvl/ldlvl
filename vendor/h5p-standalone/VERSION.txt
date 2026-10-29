@@ -1,0 +1,1 @@
+h5p-standalone 3.8.2 (MIT), https://github.com/tunapanda/h5p-standalone — dist/ copied unmodified.

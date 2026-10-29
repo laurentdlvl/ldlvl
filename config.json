@@ -1,0 +1,12 @@
+{
+  "siteTitle": "EDCH open interactive resources",
+  "siteDescription": "Interactive H5P learning resources on Diamond Open Access publishing, free to view, download and reuse.",
+  "language": "en",
+  "publisher": {
+    "type": "Organization",
+    "name": "EDCH Training",
+    "url": "https://training.edch.eu"
+  },
+  "baseUrl": "http://localhost:8000/",
+  "repositoryUrl": ""
+}

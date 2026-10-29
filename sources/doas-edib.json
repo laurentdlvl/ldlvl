@@ -1,0 +1,41 @@
+{
+  "_note": "Complements h5p.json, which carries no description. Fields left empty are reported as missing by the build. Text marked [draft] was drafted from the course content and must be validated by the author.",
+  "title": "Equity, diversity, inclusion and belonging (EDIB) in scholarly publishing",
+  "description": "[draft] Why a robust EDIB strategy matters for Diamond Open Access publishers and service providers, and how discrimination shows up in publishing practices. Learners work through real-world scenarios and decide which illustrate bias and which show good practice.",
+  "inLanguage": [
+    "en"
+  ],
+  "audience": [
+    "Diamond Open Access publishers",
+    "Service providers",
+    "Journal editors"
+  ],
+  "audienceRole": [
+    "professional"
+  ],
+  "interactivityType": "mixed",
+  "learningObjectives": [],
+  "prerequisites": "",
+  "timeRequired": "",
+  "keywords": [
+    "Diamond Open Access",
+    "DOAS",
+    "EDIB",
+    "equity",
+    "diversity",
+    "inclusion"
+  ],
+  "creators": [
+    {
+      "type": "Organization",
+      "name": "DIAMAS",
+      "id": ""
+    }
+  ],
+  "version": "1.0.0",
+  "datePublished": "",
+  "doi": "",
+  "isPartOf": "",
+  "accessibility": "",
+  "thirdPartyContentCredited": null
+}
