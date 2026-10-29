@@ -211,7 +211,7 @@ def page_resource(slug, h5p, side, lic, rows, rec, cfg, exposed):
       <div><dt>Author</dt><dd>{e(creators)}</dd></div>
       <div><dt>Publisher</dt><dd><a href="{e(cfg['publisher']['url'])}">{e(cfg['publisher']['name'])}</a></dd></div>
       <div><dt>Version</dt><dd>{e(side.get('version') or 'not set')}</dd></div>
-      <div><dt>Persistent identifier</dt><dd>{f'<a href="https://doi.org/{e(side["doi"])}">doi:{e(side["doi"])}</a>' if side.get('doi') else 'not yet assigned'}</dd></div>
+      <div><dt>Persistent identifier</dt><dd>{f'<a href="https://doi.org/{e(side["doi"])}">doi:{e(side["doi"])}</a> (version {e(side.get("version", ""))})' if side.get('doi') else 'not yet assigned'}{f'<br>All versions: <a href="https://doi.org/{e(side["conceptDoi"])}">doi:{e(side["conceptDoi"])}</a>' if side.get('conceptDoi') else ''}</dd></div>
       {f"<div><dt>Audience</dt><dd>{e(', '.join(side['audience']))}</dd></div>" if side.get('audience') else ''}
     </dl>
     <details>

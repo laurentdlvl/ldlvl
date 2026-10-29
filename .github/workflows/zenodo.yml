@@ -1,0 +1,61 @@
+name: Deposit on Zenodo
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Zenodo instance: sandbox for tests (fake DOIs), production for real DOIs"
+        type: choice
+        options: [sandbox, production]
+        default: sandbox
+      only:
+        description: "Deposit a single resource (its slug, e.g. doas-edib). Leave empty for all."
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: zenodo
+  cancel-in-progress: false
+
+jobs:
+  deposit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Deposit new versions
+        env:
+          ZENODO_TOKEN: ${{ inputs.target == 'production' && secrets.ZENODO_TOKEN || secrets.ZENODO_SANDBOX_TOKEN }}
+          TARGET: ${{ inputs.target }}
+          ONLY: ${{ inputs.only }}
+        run: |
+          if [ -n "$ONLY" ]; then
+            python3 scripts/zenodo_deposit.py --target "$TARGET" --only "$ONLY"
+          else
+            python3 scripts/zenodo_deposit.py --target "$TARGET"
+          fi
+      - name: Record identifiers in the repository
+        env:
+          TARGET: ${{ inputs.target }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sources/*.json
+          if git diff --cached --quiet; then
+            echo "Nothing new to record."
+          else
+            git commit -m "Record Zenodo identifiers ($TARGET)"
+            git push
+            echo "CHANGED=1" >> "$GITHUB_ENV"
+          fi
+      - name: Rebuild the site with the new DOIs
+        if: inputs.target == 'production' && env.CHANGED == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main

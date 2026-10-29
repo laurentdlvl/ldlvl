@@ -25,11 +25,11 @@ shown, marked `noindex`, left out of the sitemap and catalogue, and cannot be do
 ```
 sources/            one .h5p package per resource, plus an optional <slug>.json sidecar
 scripts/build.py    builds the site into _site/ (Python standard library only)
+scripts/zenodo_deposit.py  deposits each resource on Zenodo (one DOI per resource)
 templates/site.css  site styles
 vendor/             h5p-standalone 3.8.2 player, unmodified
 config.json         site title, publisher, default base URL for local builds
-.github/workflows/  builds and deploys to GitHub Pages on every push to main
-.zenodo.json        metadata used by the GitHub–Zenodo integration
+.github/workflows/  pages.yml: build and deploy on every push; zenodo.yml: Zenodo deposit, run by hand
 ```
 
 ## Add a resource
@@ -55,12 +55,31 @@ Build locally: `python3 scripts/build.py --base-url http://localhost:8000/`, the
 `python3 -m http.server 8000 -d _site`. The player needs to be served over HTTP; opening the
 files directly from disk does not work.
 
-## Persistent identifiers
+## Persistent identifiers (Zenodo)
 
-Enable the repository in Zenodo's GitHub integration: each GitHub release is archived with a
-DOI, and a concept DOI groups all versions. That DOI identifies the collection. For a DOI per
-resource (FAIR-by-Design asks for one per published object), deposit each `.h5p` on Zenodo
-separately and record its DOI in the sidecar; the page and metadata will carry it.
+The **Deposit on Zenodo** workflow gives each resource its own Zenodo record and DOI.
+Run it from **Actions → Deposit on Zenodo → Run workflow**.
+
+- **First deposit** creates the record. **Later deposits** happen only when the `version`
+  in the sidecar changes, and create a new version of the same record, so all versions share
+  one *concept DOI* (the "all versions" identifier).
+- The identifiers are written back into `sources/<slug>.json` under `zenodo.<target>` and
+  committed by the workflow.
+- **Targets.** `sandbox` (sandbox.zenodo.org) is for tests: DOIs are fake and are never shown
+  on the site. `production` (zenodo.org) mints real DOIs, copies them to the `doi` and
+  `conceptDoi` fields, and rebuilds the site so pages and metadata carry them.
+- **Gate.** A resource is skipped without a Creative Commons licence or an author, and on
+  production while its description is still marked `[draft]`.
+
+Secrets (Settings → Secrets and variables → Actions): `ZENODO_SANDBOX_TOKEN` for the sandbox,
+`ZENODO_TOKEN` for production. Create each token on the matching Zenodo site under
+Account → Applications → Personal access tokens, with the scopes `deposit:write` and
+`deposit:actions`.
+
+Local check without sending anything: `python3 scripts/zenodo_deposit.py --target sandbox --dry-run`.
+
+The GitHub–Zenodo release integration (one DOI for the whole repository) is not needed and
+should stay off, to avoid a second, overlapping record.
 
 ## Limits
 
