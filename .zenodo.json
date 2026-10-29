@@ -1,0 +1,12 @@
+{
+  "upload_type": "lesson",
+  "title": "EDCH open interactive resources: H5P courses on Diamond Open Access publishing",
+  "description": "Interactive H5P learning resources on Diamond Open Access publishing (DOAS), with the static site that plays them. Each .h5p package in sources/ is the editable source and can be imported into Moodle or any platform that supports H5P.",
+  "creators": [
+    { "name": "DIAMAS" }
+  ],
+  "license": "cc-by-4.0",
+  "keywords": ["Open Educational Resources", "H5P", "Diamond Open Access", "DOAS", "scholarly publishing"],
+  "language": "eng",
+  "notes": "Check before the first release: one package (doas-copyright-and-licences) declares no licence. Declare it, or remove the package, so that this record's licence is accurate for every file."
+}
