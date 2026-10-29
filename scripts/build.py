@@ -25,6 +25,9 @@ import sys
 import zipfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from preview import page_preview  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 
 LICENCES = {
@@ -232,6 +235,7 @@ def page_resource(slug, h5p, side, lic, rows, rec, cfg, exposed):
         <thead><tr><th scope="col">Requirement</th><th scope="col">Status</th><th scope="col">Detail</th></tr></thead>
         <tbody>{''.join(f'<tr><td>{e(r[0])}</td><td><span class="st {r[1]}">{labels[r[1]]}</span></td><td>{e(r[2])}</td></tr>' for r in rows)}</tbody>
       </table>
+      <p class="note"><a href="{root}preview/{slug}/">Import preview</a>: where each field of this page would come from once resources are imported from Moodle.</p>
       <p class="note">Based on the definition of open educational resources (UNESCO, 2019) and the FAIR-by-Design minimum elements (Skills4EOSC). Results are not tracked on this site; to follow learners' progress, use the package in a learning platform.</p>
     </details>
   </section>
@@ -385,6 +389,10 @@ def main():
         rdir.mkdir(parents=True)
         (rdir / "index.html").write_text(page_resource(slug, h5p, side, lic, rows, rec, cfg, exposed), encoding="utf-8")
         (rdir / "metadata.json").write_text(json.dumps(rec, ensure_ascii=False, indent=2), encoding="utf-8")
+        pdir = out / "preview" / slug
+        pdir.mkdir(parents=True)
+        content = json.loads((dest / "content" / "content.json").read_text(encoding="utf-8"))
+        (pdir / "index.html").write_text(page_preview(slug, h5p, content, side, pkg.stat().st_size, cfg, side["_themes"], head), encoding="utf-8")
         if exposed:
             records.append(rec)
         title = side.get("title") or h5p.get("title")

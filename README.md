@@ -44,6 +44,14 @@ Search (title, description, keywords, theme) and filters (format, language, audi
 time required) run in the browser. A filter with a single value is hidden. The search and
 filters are kept in the page address, so a filtered view can be shared as a link.
 
+## Import preview
+
+Each resource also has an **import preview** (`preview/<slug>/`, not indexed), linked from its
+page. It lists every field the page would show once resources are imported from Moodle, with
+its source: the H5P package, the build (computed from the package), the Moodle activity, the
+Moodle course, Zenodo or the site. Moodle fields stay empty until the import exists; values
+typed by hand in the sidecar are shown only as placeholders to be replaced.
+
 ## Add a resource
 
 1. Export the content as an `.h5p` file (Moodle content bank, H5P editor, Lumi).
