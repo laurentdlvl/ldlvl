@@ -7,6 +7,6 @@
     "name": "EDCH Training",
     "url": "https://training.edch.eu"
   },
-  "baseUrl": "http://localhost:8000/",
-  "repositoryUrl": ""
+  "baseUrl": "https://laurentdlvl.github.io/ldlvl/",
+  "repositoryUrl": "https://github.com/laurentdlvl/ldlvl"
 }
