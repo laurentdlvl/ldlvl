@@ -1,0 +1,16 @@
+{
+  "sandbox": {
+    "record_id": 643806,
+    "doi": "10.5281/zenodo.643806",
+    "edit_url": "https://sandbox.zenodo.org/uploads/643806",
+    "created": "2026-11-17T14:55:20+00:00",
+    "files_to_upload": [
+      "xml-publishing.mbz",
+      "learning-resources.zip",
+      "resource-inventory.csv",
+      "README.md",
+      "LICENSE.txt"
+    ],
+    "published": false
+  }
+}
