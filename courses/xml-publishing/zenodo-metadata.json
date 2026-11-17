@@ -1,0 +1,96 @@
+{
+  "_note": "Zenodo deposit metadata for the course archive (legacy deposit API format). Fill every {{TO_COMPLETE}} before a production run. Edited here, used by scripts/zenodo_course_draft.py. The draft is never published automatically.",
+  "upload_type": "lesson",
+  "title": "XML in Diamond Open Access Journal Publishing",
+  "publication_date": "2026-05-25",
+  "creators": [
+    {
+      "name": "Kupreyev, Maxim",
+      "affiliation": "OPERAS",
+      "orcid": "0000-0002-8472-6954"
+    },
+    {
+      "name": "Jertec Musap, Ljiljana",
+      "affiliation": "SRCE – University of Zagreb University Computing Centre",
+      "orcid": "0000-0002-0059-9899"
+    },
+    {
+      "name": "Withanage, Dulip",
+      "affiliation": "TIB",
+      "orcid": "0000-0002-4996-7007"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "Avanço, Karla",
+      "affiliation": "OpenEdition",
+      "orcid": "0000-0001-8784-7754",
+      "type": "Other"
+    },
+    {
+      "name": "Jan, Marguerite",
+      "affiliation": "OpenEdition",
+      "orcid": "0009-0009-2310-4252",
+      "type": "Other"
+    },
+    {
+      "name": "Gingold, Arnaud",
+      "affiliation": "OpenEdition",
+      "orcid": "0009-0000-0466-5542",
+      "type": "Other"
+    },
+    {
+      "name": "Aabid, Mohsine",
+      "affiliation": "OpenEdition",
+      "orcid": "0009-0003-3792-7678",
+      "type": "Other"
+    }
+  ],
+  "description": "<p>Archive and open educational resources of the online course <em>XML Publishing</em>, published on the EDCH Training platform (European Diamond Capacity Hub). The course introduces XML and its use in scholarly publishing, with a focus on Diamond Open Access journals, JATS XML and XML-based publishing workflows in OJS. It was developed within the CRAFT-OA project (2023–2025).</p><p><strong>Learning outcomes</strong> — after the course, learners can:</p><ul><li>explain what XML and its standards are and why they matter for publishing;</li><li>explain why XML is essential for data exchange, visualisation and quality;</li><li>structure JATS articles for optimal discoverability;</li><li>convert DOCX files using the JATS XML Converter Service;</li><li>implement XML workflows using OJS plugins.</li></ul><p><strong>Audience:</strong> {{TO_COMPLETE: audience}}<br><strong>Level:</strong> {{TO_COMPLETE: level}}<br><strong>Prerequisites:</strong> {{TO_COMPLETE: prerequisites}}<br><strong>Format:</strong> self-paced online course, 9 modules, about 90 minutes. Language: English.</p><p><strong>Contents:</strong> the Moodle course backup (xml-publishing.mbz, Moodle 4.5.2, without user data); 36 extracted learning resources organised by module (learning-resources.zip: HTML pages with transcripts, 10 H5P interactive videos, 5 videos, 4 images, 1 PDF guideline); a file inventory with checksums (resource-inventory.csv); README.md with reuse guidance.</p><p><strong>Instructional design:</strong> Karla Avanço, Marguerite Jan (OpenEdition). <strong>Review:</strong> Arnaud Gingold, Mohsine Aabid (OpenEdition).</p><p>All resources are available under CC BY 4.0. Questions, feedback and reuse reports: <a href=\"https://forum.edch.eu/t/training-platform-xml-publishing-feedback-questions/921\">EDCH forum</a>.</p><h4>Modules</h4><ol><li>Introduction to XML — theory and activity, 8 min (M. Kupreyev)</li><li>XML for data visualisation — theory, 4 min (M. Kupreyev)</li><li>XML for data exchange — theory and activity, 20 min (M. Kupreyev)</li><li>XML for data quality — theory, 15 min (M. Kupreyev)</li><li>Introduction to JATS XML — theory, 8 min (L. Jertec Musap)</li><li>Preparing DOCX documents — tutorial, 10 min (L. Jertec Musap)</li><li>JATS XML Converter Service — tutorial, 8 min (L. Jertec Musap)</li><li>docxConverter plugin — tutorial, 3 min (D. Withanage)</li><li>Texture plugin — tutorial, 5 min (D. Withanage)</li></ol><p>Also: glossary, course map, feedback questionnaire aligned with the learning outcomes, further resources.</p><h4>Technical information</h4><p>Restoring the .mbz requires Moodle 4.5 or later and the plugins mod_questionnaire, enrol_autoenrol and block_vitrina. Pages use inline JavaScript, Bootstrap 4 accordions, Font Awesome icons and the Barlow font; visual equivalence on another site is not guaranteed. H5P packages can be imported into Moodle, WordPress, Drupal or Lumi. SHA-1 checksums of all extracted files are listed in resource-inventory.csv.</p>",
+  "notes": "Accessibility: transcripts for the videos of modules 1–5; written step-by-step instructions for the videos of module 6; no transcript for modules 7–9. Known issue: in module 6 (\"Footnotes\"), the video is not embedded in the HTML page; the file Footnotes.mp4 is included in the module folder. Alternative titles: XML Publishing; XML Publishing: Implementing XML in your publishing workflow.",
+  "access_right": "open",
+  "license": "cc-by-4.0",
+  "keywords": [
+    "XML",
+    "JATS",
+    "OJS",
+    "metadata",
+    "single-source publishing",
+    "Diamond Open Access",
+    "open educational resources",
+    "audience: {{TO_COMPLETE: audience}}",
+    "level: {{TO_COMPLETE: level}}",
+    "mode: self-paced online course"
+  ],
+  "language": "eng",
+  "version": "1.0",
+  "related_identifiers": [
+    {
+      "identifier": "https://training.edch.eu/blocks/vitrina/detail.php?id=29",
+      "relation": "isVariantFormOf",
+      "resource_type": "lesson"
+    },
+    {
+      "identifier": "10.5281/zenodo.15769907",
+      "relation": "isDerivedFrom",
+      "resource_type": "presentation"
+    },
+    {
+      "identifier": "https://www.youtube.com/watch?v=nLwIcTpGHSA",
+      "relation": "isSupplementedBy",
+      "resource_type": "video"
+    },
+    {
+      "identifier": "https://github.com/editum/docxtojats-pipeline",
+      "relation": "references",
+      "resource_type": "software"
+    }
+  ],
+  "files_expected": [
+    "xml-publishing.mbz",
+    "learning-resources.zip",
+    "resource-inventory.csv",
+    "README.md",
+    "LICENSE.txt"
+  ]
+}

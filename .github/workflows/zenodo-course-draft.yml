@@ -1,0 +1,61 @@
+name: Zenodo course draft
+
+# Creates a Zenodo DRAFT for a course archive and reserves its DOI.
+# It never uploads files and never publishes: both are done by hand in the Zenodo form.
+
+on:
+  workflow_dispatch:
+    inputs:
+      course:
+        description: "Course folder under courses/ (e.g. xml-publishing)"
+        required: true
+        default: xml-publishing
+      target:
+        description: "Zenodo instance: sandbox for tests (fake DOIs), production for real DOIs"
+        type: choice
+        options: [sandbox, production]
+        default: sandbox
+      allow_placeholders:
+        description: "Sandbox only: accept {{TO_COMPLETE}} placeholders left in the metadata"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: zenodo
+  cancel-in-progress: false
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Create the draft and reserve the DOI
+        env:
+          ZENODO_TOKEN: ${{ inputs.target == 'production' && secrets.ZENODO_TOKEN || secrets.ZENODO_SANDBOX_TOKEN }}
+          COURSE: ${{ inputs.course }}
+          TARGET: ${{ inputs.target }}
+          ALLOW: ${{ inputs.allow_placeholders }}
+        run: |
+          args="--course $COURSE --target $TARGET"
+          if [ "$ALLOW" = "true" ]; then args="$args --allow-placeholders"; fi
+          python3 scripts/zenodo_course_draft.py $args
+      - name: Record the draft in the repository
+        env:
+          COURSE: ${{ inputs.course }}
+          TARGET: ${{ inputs.target }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "courses/$COURSE/zenodo-draft.json" || true
+          if git diff --cached --quiet; then
+            echo "Nothing new to record."
+          else
+            git commit -m "Record Zenodo draft for $COURSE ($TARGET)"
+            git push
+          fi
